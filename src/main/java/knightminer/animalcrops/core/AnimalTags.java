@@ -1,10 +1,12 @@
 package knightminer.animalcrops.core;
 
+import knightminer.animalcrops.AnimalCrops;
 import net.minecraft.block.Block;
 import net.minecraft.data.server.BlockTagProvider;
 import net.minecraft.entity.EntityType;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.TagKey;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 /** Class holding all tags used by the mod */
@@ -44,11 +46,17 @@ public class AnimalTags {
 
 	/** Creates a tag for a block */
 	private static TagKey<Block> blockTag(String name) {
-		return TagKey.of(Registry.BLOCK_KEY, Registration.getResource(name));
+		return TagKey.of(Registry.BLOCK_KEY, getResource(name));
 	}
 
 	/** Creates a tag for a entity tag */
 	private static TagKey<EntityType<?>> entityTag(String name) {
-		return TagKey.of(Registry.ENTITY_TYPE_KEY, Registration.getResource(name));
+		return TagKey.of(Registry.ENTITY_TYPE_KEY, getResource(name));
 	}
+
+	private static Identifier getResource(String name) {
+		return new Identifier(AnimalCrops.modID, name);
+	}
+
+	public static void register() {}
 }

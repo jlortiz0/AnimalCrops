@@ -18,15 +18,15 @@ import java.util.Random;
 public class Configuration implements ConfigData {
 
 	// types
-	public boolean animalCrops;
-	public boolean anemonemals;
-	public boolean animalShrooms;
-	public boolean magnemones;
+	public boolean animalCrops = true;
+	public boolean anemonemals = true;
+	public boolean animalShrooms = true;
+	public boolean magnemones = true;
 	// general
-	public boolean canBonemeal;
-	public AnimalPollenItem.Action pollenAction;
+	public boolean canBonemeal = true;
+	public AnimalPollenItem.Action pollenAction = AnimalPollenItem.Action.DAMAGE;
 	// grass drops
-	public boolean dropAnimalPollen;
+	public boolean dropAnimalPollen = true;
 
 	public boolean renderCropEntity = true;
 	public boolean renderAnemonemalEntity = true;

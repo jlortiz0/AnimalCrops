@@ -32,6 +32,10 @@ import java.util.Objects;
  * Base crop logic, used for plains crops directly
  */
 public class AnimalCropsBlock extends CropBlock implements BlockEntityProvider {
+	public TagKey<EntityType<?>> getTag() {
+		return tag;
+	}
+
 	private final TagKey<EntityType<?>> tag;
 
 	public AnimalCropsBlock(AbstractBlock.Settings props, TagKey<EntityType<?>> tag) {
@@ -43,7 +47,7 @@ public class AnimalCropsBlock extends CropBlock implements BlockEntityProvider {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView worldIn, BlockPos pos) {
-		return state.isIn(AnimalTags.CROP_SOIL);
+		return true || state.isIn(AnimalTags.CROP_SOIL);
 	}
 
 
@@ -107,23 +111,23 @@ public class AnimalCropsBlock extends CropBlock implements BlockEntityProvider {
 		return stack;
 	}
 
-	@Override
-	public void appendStacks(ItemGroup tab, DefaultedList<ItemStack> items) {
-		for (RegistryEntry<EntityType<?>> type : Registry.ENTITY_TYPE.getEntryList(this.tag).get().stream().toList()) {
-			items.add(Utils.setEntityId(new ItemStack(this), type.getKey().get().getValue()));
-		}
-	}
-
-
 	/* Bonemeal */
 
 	@Override
 	public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
-		return AnimalCrops.config.canBonemeal && super.isFertilizable(world, pos, state, isClient);
+		return AnimalCrops.config.canBonemeal;
 	}
 
 	@Override
 	protected int getGrowthAmount(World level) {
 		return level.random.nextInt(1, 3);
+	}
+
+	@Override
+	public void applyGrowth(World world, BlockPos pos, BlockState state) {
+		super.applyGrowth(world, pos, state);
+		if (this.getMaxAge() <= getAge(state) + 1) {
+			world.setBlockState(pos, this.withAge(0), 2);
+		}
 	}
 }

@@ -2,6 +2,7 @@ package knightminer.animalcrops;
 
 import knightminer.animalcrops.core.AnimalTags;
 import knightminer.animalcrops.core.Configuration;
+import knightminer.animalcrops.core.Registration;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
@@ -16,8 +17,9 @@ public class AnimalCrops implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		AnimalTags.init();
 		AutoConfig.register(Configuration.class, JanksonConfigSerializer::new);
 		config = AutoConfig.getConfigHolder(Configuration.class).getConfig();
+		AnimalTags.init();
+		Registration.register();
 	}
 }

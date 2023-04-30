@@ -1,15 +1,19 @@
 package knightminer.animalcrops.items;
 
+import knightminer.animalcrops.blocks.AnimalCropsBlock;
 import knightminer.animalcrops.core.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -45,4 +49,8 @@ public class AnimalSeedsItem extends BlockItem {
     super.appendTooltip(stack, level, tooltip, flagIn);
     tooltip.add(new TranslatableText(this.getTranslationKey() + ".tooltip"));
   }
+
+	@Override
+	public void appendStacks(ItemGroup tab, DefaultedList<ItemStack> items) {
+	}
 }
