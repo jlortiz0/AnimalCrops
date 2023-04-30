@@ -39,7 +39,7 @@ public class AnimalPollenItem extends Item {
   public ActionResult useOnEntity(ItemStack stack, PlayerEntity player, LivingEntity entity, Hand hand) {
     EntityType<?> type = entity.getType();
     if (type.isIn(AnimalTags.POLLEN_REACTIVE)) {
-      // next, check which type of seed we are grabbing
+      // next, check which tag of seed we are grabbing
       Item item = null;
       if (type.isIn(AnimalTags.ANIMAL_CROPS)) {
         item = Registration.seeds;
@@ -53,7 +53,7 @@ public class AnimalPollenItem extends Item {
       else if (type.isIn(AnimalTags.MAGNEMONES)) {
         item = Registration.magnemoneSpores;
       }
-      // its possible the type matches none because someone used tags wrongly
+      // its possible the tag matches none because someone used tags wrongly
       if (item != null) {
         // create the seed item
         ItemStack seeds = new ItemStack(item);

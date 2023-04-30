@@ -3,17 +3,14 @@ package knightminer.animalcrops.core;
 import knightminer.animalcrops.items.AnimalPollenItem;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.EntityType;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
-import net.minecraftforge.common.ForgeConfigSpec.Builder;
-import net.minecraftforge.common.ForgeConfigSpec.EnumValue;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.tags.ITag;
+import net.minecraft.block.Block;
+import net.minecraft.entity.EntityType;
+import net.minecraft.tag.TagKey;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntryList;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.Random;
 
 @Config(name = "animalcrops")
@@ -30,31 +27,33 @@ public class Configuration implements ConfigData {
 	// grass drops
 	public boolean dropAnimalPollen;
 
-	/** Config setup for each type of animal crops */
-	public static class AnimalCropType {
-		private final TagKey<EntityType<?>> tag;
-		private final BooleanValue drop;
+	public boolean renderCropEntity = true;
+	public boolean renderAnemonemalEntity = true;
+	public boolean renderShroomEntity = true;
+	public boolean renderMagnemoneEntity = true;
 
-		protected AnimalCropType(TagKey<EntityType<?>> tag, BooleanValue drop) {
-			this.tag = tag;
-			this.drop = drop;
+	public boolean shouldRenderEntity(Block block) {
+		if (block == Registration.crops) {
+			return renderCropEntity;
 		}
-
-		/**
-		 * Returns true if this type of animal crops drops
-		 */
-		public boolean doesDrop() {
-			ITag<EntityType<?>> typeTag = ForgeRegistries.ENTITIES.tags().getTag(tag);
-			return drop.get() && !typeTag.isBound() && !typeTag.isEmpty();
+		if (block == Registration.anemonemal) {
+			return renderAnemonemalEntity;
 		}
+		if (block == Registration.shrooms) {
+			return renderShroomEntity;
+		}
+		if (block == Registration.magnemone) {
+			return renderMagnemoneEntity;
+		}
+		// fallback in case some other mod extends this
+		return true;
+	}
 
-		/** Gets a random value of this crop drop type */
-		@Nullable
-		public EntityType<?> getRandomValue(Random random) {
-			if (doesDrop()) {
-				return ForgeRegistries.ENTITIES.tags().getTag(tag).getRandomElement(random).get();
-			}
+	public static EntityType<?> getRandomValue(TagKey<EntityType<?>> tag, Random random) {
+		RegistryEntryList.Named<EntityType<?>> ls = Registry.ENTITY_TYPE.getEntryList(tag).get();
+		if (ls == null || ls.size() == 0) {
 			return null;
 		}
+		return ls.get(random.nextInt(ls.size())).value();
 	}
 }

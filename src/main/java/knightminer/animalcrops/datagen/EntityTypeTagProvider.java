@@ -1,16 +1,10 @@
 package knightminer.animalcrops.datagen;
 
-import knightminer.animalcrops.AnimalCrops;
 import knightminer.animalcrops.core.AnimalTags;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.tags.EntityTypeTagsProvider;
 import net.minecraft.entity.EntityType;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.entity.EntityType;
-import net.minecraftforge.common.data.ExistingFileHelper;
 
 import javax.annotation.Nullable;
 

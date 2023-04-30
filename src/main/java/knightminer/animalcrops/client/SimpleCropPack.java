@@ -2,14 +2,8 @@ package knightminer.animalcrops.client;
 
 import com.google.common.collect.ImmutableSet;
 import knightminer.animalcrops.AnimalCrops;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.AbstractPackResources;
-import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.ResourcePackFileNotFoundException;
-import net.minecraft.server.packs.repository.Pack;
-import net.minecraft.server.packs.repository.Pack.PackConstructor;
-import net.minecraft.server.packs.repository.PackSource;
-import net.minecraft.server.packs.repository.RepositorySource;
+import net.minecraft.resource.*;
+import net.minecraft.util.Identifier;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -24,13 +18,13 @@ import java.util.function.Predicate;
 /**
  * Resource pack to override fancy models with simple ones
  */
-public class SimpleCropPack extends AbstractPackResources implements RepositorySource {
+public class SimpleCropPack extends AbstractFileResourcePack implements ResourcePackProvider {
   /** Base pack name, used for the folder containing pack resources */
   private static final String FOLDER = "simple_crops";
   /** Namespaced pack name, used as the internal name passed to the resource pack loader */
   public static final String PACK_NAME = AnimalCrops.modID + ":" + FOLDER;
   /** Resource prefix for valid pack resources. Essentially checks that they are client side Animal Crops resources */
-  private static final String RES_PREFIX = PackType.CLIENT_RESOURCES.getDirectory() + "/" + AnimalCrops.modID + "/";
+  private static final String RES_PREFIX = ResourceType.CLIENT_RESOURCES.getDirectory() + "/" + AnimalCrops.modID + "/";
   /** Replacement prefix for pack resources, to load from FOLDER */
   private static final String PATH_PREFIX = String.format("/%s%s/", RES_PREFIX, FOLDER);
 
@@ -51,13 +45,13 @@ public class SimpleCropPack extends AbstractPackResources implements RepositoryS
   }
 
   @Override
-  public Set<String> getNamespaces(PackType type) {
+  public Set<String> getNamespaces(ResourceType type) {
     // only replace resources for animal crops
-    return type == PackType.CLIENT_RESOURCES ? ImmutableSet.of(AnimalCrops.modID) : ImmutableSet.of();
+    return type == ResourceType.CLIENT_RESOURCES ? ImmutableSet.of(AnimalCrops.modID) : ImmutableSet.of();
   }
 
   @Override
-  protected InputStream getResource(String name) throws IOException {
+  protected InputStream openFile(String name) throws IOException {
     // pack.mcmeta and pack.png are fetched without prefix, so pull from proper directory
     // everything else is prefixed, so prefix is trimmed
     if (name.equals("pack.mcmeta") || name.equals("pack.png") || name.startsWith(RES_PREFIX)) {
@@ -67,11 +61,11 @@ public class SimpleCropPack extends AbstractPackResources implements RepositoryS
       }
     }
 
-    throw new ResourcePackFileNotFoundException(this.file, name);
+    throw new ResourceNotFoundException(this.base, name);
   }
 
   @Override
-  protected boolean hasResource(String name) {
+  protected boolean containsFile(String name) {
     if (!name.startsWith(RES_PREFIX)) {
       return false;
     }
@@ -79,7 +73,7 @@ public class SimpleCropPack extends AbstractPackResources implements RepositoryS
   }
 
   @Override
-  public Collection<ResourceLocation> getResources(PackType type, String domain, String path, int maxDepth, Predicate<String> filter) {
+  public Collection<Identifier> findResources(ResourceType type, String domain, String path, int maxDepth, Predicate<String> filter) {
     // this method appears to only be called for fonts and GUIs, so just return an empty list as neither is used here
     return Collections.emptyList();
   }
@@ -107,7 +101,7 @@ public class SimpleCropPack extends AbstractPackResources implements RepositoryS
   /* Static functions */
 
   @Override
-  public void loadPacks(Consumer<Pack> infoConsumer, PackConstructor factory) {
-    infoConsumer.accept(Pack.create(PACK_NAME, false, ()->this, factory, Pack.Position.TOP, PackSource.DEFAULT));
+  public void register(Consumer<ResourcePackProfile> infoConsumer, ResourcePackProfile.Factory factory) {
+    infoConsumer.accept(ResourcePackProfile.of(PACK_NAME, false, ()->this, factory, ResourcePackProfile.InsertionPosition.TOP, ResourcePackSource.PACK_SOURCE_NONE));
   }
 }

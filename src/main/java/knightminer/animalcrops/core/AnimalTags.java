@@ -23,13 +23,13 @@ public class AnimalTags {
 
 	/** Entities that are able to be planted */
 	public static final TagKey<EntityType<?>> PLANTABLE = entityTag("plantable");
-	/** Entities for the overworld crop type */
+	/** Entities for the overworld crop tag */
 	public static final TagKey<EntityType<?>> ANIMAL_CROPS = entityTag("plantable/animal_crops");
-	/** Entities for the underwater crop type */
+	/** Entities for the underwater crop tag */
 	public static final TagKey<EntityType<?>> ANEMONEMAL = entityTag("plantable/anemonemals");
-	/** Entities for the nether crop type */
+	/** Entities for the nether crop tag */
 	public static final TagKey<EntityType<?>> ANIMAL_SHROOMS = entityTag("plantable/animal_shrooms");
-	/** Entities for the under lava crop type */
+	/** Entities for the under lava crop tag */
 	public static final TagKey<EntityType<?>> MAGNEMONES = entityTag("plantable/magnemones");
 	/** Animal crop entities available as random drops */
 	public static final TagKey<EntityType<?>> DROPPABLE_ANIMAL_CROPS = entityTag("droppable/animal_crops");
@@ -47,7 +47,7 @@ public class AnimalTags {
 		return TagKey.of(Registry.BLOCK_KEY, Registration.getResource(name));
 	}
 
-	/** Creates a tag for a entity type */
+	/** Creates a tag for a entity tag */
 	private static TagKey<EntityType<?>> entityTag(String name) {
 		return TagKey.of(Registry.ENTITY_TYPE_KEY, Registration.getResource(name));
 	}
