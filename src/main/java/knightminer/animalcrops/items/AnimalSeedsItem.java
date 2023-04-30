@@ -9,6 +9,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -33,7 +34,7 @@ public class AnimalSeedsItem extends BlockItem {
 	@Override
 	public Text getName(ItemStack stack) {
     return Utils.getEntityID(stack.getNbt())
-                .flatMap(EntityType::get)
+                .map(Registry.ENTITY_TYPE::get)
                 .map(EntityType::getTranslationKey)
                 .map((key) -> new TranslatableText(this.getTranslationKey(), new TranslatableText(key)))
                 .orElseGet(() -> new TranslatableText(this.getTranslationKey() + ".default"));

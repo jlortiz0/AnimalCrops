@@ -16,6 +16,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.ConditionalLootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.tag.TagKey;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 import javax.annotation.Nonnull;
@@ -47,12 +48,12 @@ public class RandomAnimalLootFunction extends ConditionalLootFunction {
 
   @Override
   protected ItemStack process(ItemStack stack, LootContext context) {
-    EntityType<?> type = Configuration.getRandomValue(tag, context.getRandom());
+    Identifier type = Configuration.getRandomValue(tag, context.getRandom());
     // prevent crash if empty, the config condition should handle this though
     if (type == null) {
       AnimalCrops.log.error("Received empty animal list for {}, a condition is missing in the loot table", type);
     } else {
-      Utils.setEntityId(stack, type.getUntranslatedName());
+      Utils.setEntityId(stack, type);
     }
     return stack;
   }

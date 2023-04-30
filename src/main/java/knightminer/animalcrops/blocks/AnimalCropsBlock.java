@@ -19,6 +19,8 @@ import net.minecraft.tag.TagKey;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
@@ -107,8 +109,8 @@ public class AnimalCropsBlock extends CropBlock implements BlockEntityProvider {
 
 	@Override
 	public void appendStacks(ItemGroup tab, DefaultedList<ItemStack> items) {
-		for (EntityType<?> type : Registry.ENTITY_TYPE.stream().toList()) {
-			items.add(Utils.setEntityId(new ItemStack(this), Objects.requireNonNull(type.getUntranslatedName()).toString()));
+		for (RegistryEntry<EntityType<?>> type : Registry.ENTITY_TYPE.getEntryList(this.tag).get().stream().toList()) {
+			items.add(Utils.setEntityId(new ItemStack(this), type.getKey().get().getValue()));
 		}
 	}
 

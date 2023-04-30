@@ -19,6 +19,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.item.Item;
 
@@ -57,7 +58,7 @@ public class AnimalPollenItem extends Item {
       if (item != null) {
         // create the seed item
         ItemStack seeds = new ItemStack(item);
-        Utils.setEntityId(seeds, Objects.requireNonNull(type.getUntranslatedName()).toString());
+        Utils.setEntityId(seeds, Registry.ENTITY_TYPE.getId(type));
         player.setStackInHand(hand, Utils.fillContainer(player, stack, seeds));
 
         // effects

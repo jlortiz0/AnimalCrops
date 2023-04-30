@@ -4,15 +4,17 @@ import knightminer.animalcrops.AnimalCrops;
 import knightminer.animalcrops.core.AnimalTags;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.util.registry.Registry;
 
 import javax.annotation.Nullable;
 
-public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
+public class BlockTagProvider extends FabricTagProvider<Block> {
 	public BlockTagProvider(FabricDataGenerator generator) {
-		super(generator);
+		super(generator, Registry.BLOCK, "Block tags");
 	}
 
 	@Override

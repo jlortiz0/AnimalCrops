@@ -4,6 +4,7 @@ import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.Identifier;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -18,7 +19,7 @@ public abstract class Utils {
    * @param tags  Tag compound, from either a TE or a stack
    * @return  Entity resource location
    */
-  public static Optional<String> getEntityID(@Nullable NbtCompound tags) {
+  public static Optional<Identifier> getEntityID(@Nullable NbtCompound tags) {
     // no tags? skip
     if (tags == null) {
       return Optional.empty();
@@ -29,7 +30,7 @@ public abstract class Utils {
       return Optional.empty();
     }
 
-    return Optional.of(tags.getString(ENTITY_TAG));
+    return Optional.of(new Identifier(tags.getString(ENTITY_TAG)));
   }
 
   /**
@@ -38,11 +39,11 @@ public abstract class Utils {
    * @param entity  Entity string
    * @return  Stack with NBT set
    */
-  public static ItemStack setEntityId(ItemStack stack, @Nullable String entity) {
+  public static ItemStack setEntityId(ItemStack stack, @Nullable Identifier entity) {
     if(entity == null) {
       return stack;
     }
-    stack.getOrCreateNbt().putString(ENTITY_TAG, entity);
+    stack.getOrCreateNbt().putString(ENTITY_TAG, entity.toString());
     return stack;
   }
 

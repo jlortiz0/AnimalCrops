@@ -13,18 +13,20 @@ import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.entity.EntityType;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+
+import java.util.Optional;
 
 @SuppressWarnings("unused")
 public class ClientEvents implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		FabricLoader.getInstance().getModContainer(AnimalCrops.modID).ifPresent(modContainer -> {
-			ResourceManagerHelper.registerBuiltinResourcePack(new Identifier(AnimalCrops.modID, "simple_crops"), modContainer, ResourcePackActivationType.NORMAL);
-		});
+		FabricLoader.getInstance().getModContainer(AnimalCrops.modID).ifPresent(modContainer ->
+			ResourceManagerHelper.registerBuiltinResourcePack(new Identifier(AnimalCrops.modID, "simple_crops"), modContainer, ResourcePackActivationType.NORMAL)
+		);
 		BlockEntityRendererRegistry.register(Registration.cropsTE, RenderAnimalCrops::new);
 		BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), Registration.crops, Registration.anemonemal, Registration.shrooms, Registration.magnemone);
 		ColorProviderRegistry.BLOCK.register((state, world, pos, index) -> {
@@ -32,12 +34,12 @@ public class ClientEvents implements ClientModInitializer {
 				return -1;
 			}
 			BlockEntity te = world.getBlockEntity(pos);
-			if (te != null && te instanceof AnimalCropsBlockEntity be) {
-				return getEggColor(be.getEntityId().orElse(""), index);
+			if (te instanceof AnimalCropsBlockEntity be) {
+				return getEggColor(be.getEntityId().orElse(null), index);
 			}
 			return -1;
 		}, Registration.crops, Registration.anemonemal, Registration.shrooms, Registration.magnemone);
-		ColorProviderRegistry.ITEM.register((stack, index) -> getEggColor(Utils.getEntityID(stack.getNbt()).orElse(""), index),
+		ColorProviderRegistry.ITEM.register((stack, index) -> getEggColor(Utils.getEntityID(stack.getNbt()).orElse(null), index),
 				Registration.seeds, Registration.anemonemalSeeds, Registration.shrooms, Registration.magnemone);
 	}
 
@@ -49,9 +51,8 @@ public class ClientEvents implements ClientModInitializer {
 	 * @param index  Tint index to use
 	 * @return  Egg color for the given tags and index
 	 */
-	@SuppressWarnings("Convert2MethodRef")
-	private static int getEggColor(String entityId, int index) {
-		return EntityType.get(entityId)
+	private static int getEggColor(Identifier entityId, int index) {
+		return Optional.of(Registry.ENTITY_TYPE.get(entityId))
 				.map(SpawnEggItem::forEntity)
 				.map(egg->egg.getColor(index))
 				.orElse(-1);

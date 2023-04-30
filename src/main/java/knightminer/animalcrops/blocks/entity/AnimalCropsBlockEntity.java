@@ -34,7 +34,7 @@ public class AnimalCropsBlockEntity extends BlockEntity {
 	 * Typically null except on the client side (only cached during fancy crop rendering)
 	 * */
 	private LivingEntity entity;
-	private String entityId;
+	private Identifier entityId;
 	private int direction;
 
 	public AnimalCropsBlockEntity(BlockPos pos, BlockState state) {
@@ -48,7 +48,7 @@ public class AnimalCropsBlockEntity extends BlockEntity {
 	 * Sets the entity into the TE
 	 * @param entityID  Entity ID to set
 	 */
-	public void setEntity(String entityID) {
+	public void setEntity(Identifier entityID) {
 		// only set if valid
 		if (!entityValid(entityID)) {
 			return;
@@ -59,7 +59,7 @@ public class AnimalCropsBlockEntity extends BlockEntity {
 		this.markDirty();
 	}
 
-	public Optional<String> getEntityId() {
+	public Optional<Identifier> getEntityId() {
 		return Optional.ofNullable(this.entityId);
 	}
 
@@ -76,7 +76,7 @@ public class AnimalCropsBlockEntity extends BlockEntity {
 		}
 
 		// create the entity from the tile data
-		Entity created = EntityType.get(entityId).map((type) -> type.create(world)).orElse(null);
+		Entity created = Optional.ofNullable(Registry.ENTITY_TYPE.get(entityId)).map((type) -> type.create(world)).orElse(null);
 		if (created == null) {
 			return null;
 		}
@@ -159,8 +159,7 @@ public class AnimalCropsBlockEntity extends BlockEntity {
 	 * @param entityID  ID to check
 	 * @return  True if the ID is valid, false otherwise
 	 */
-	private static boolean entityValid(String entityID) {
-		Identifier loc = Identifier.tryParse(entityID);
+	private static boolean entityValid(Identifier loc) {
 		if (loc != null && Registry.ENTITY_TYPE.containsId(loc)) {
 			EntityType<?> type = Registry.ENTITY_TYPE.get(loc);
 			return type != null && type.isIn(AnimalTags.PLANTABLE);
@@ -171,7 +170,7 @@ public class AnimalCropsBlockEntity extends BlockEntity {
 	@Override
 	public void writeNbt(NbtCompound nbt) {
 		nbt.putInt("direction", this.direction);
-		nbt.putString("entityType", this.entityId);
+		nbt.putString("entityType", this.entityId.toString());
 		super.writeNbt(nbt);
 	}
 
@@ -179,7 +178,7 @@ public class AnimalCropsBlockEntity extends BlockEntity {
 	public void readNbt(NbtCompound nbt) {
 		super.readNbt(nbt);
 		this.direction = nbt.getInt("direction");
-		this.entityId = nbt.getString("entityType");
+		this.entityId = new Identifier(nbt.getString("entityType"));
 	}
 
 	@Nullable

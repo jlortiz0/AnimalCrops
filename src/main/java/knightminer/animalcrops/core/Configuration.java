@@ -6,6 +6,7 @@ import me.shedaniel.autoconfig.annotation.Config;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.tag.TagKey;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntryList;
 
@@ -49,11 +50,11 @@ public class Configuration implements ConfigData {
 		return true;
 	}
 
-	public static EntityType<?> getRandomValue(TagKey<EntityType<?>> tag, Random random) {
+	public static Identifier getRandomValue(TagKey<EntityType<?>> tag, Random random) {
 		RegistryEntryList.Named<EntityType<?>> ls = Registry.ENTITY_TYPE.getEntryList(tag).get();
 		if (ls == null || ls.size() == 0) {
 			return null;
 		}
-		return ls.get(random.nextInt(ls.size())).value();
+		return ls.get(random.nextInt(ls.size())).getKey().map(k -> k.getValue()).orElse(null);
 	}
 }

@@ -2,29 +2,37 @@ package knightminer.animalcrops.plugins.jei;
 
 import knightminer.animalcrops.AnimalCrops;
 import knightminer.animalcrops.core.Registration;
-import knightminer.animalcrops.core.Utils;
-import mezz.jei.api.IModPlugin;
-import mezz.jei.api.JeiPlugin;
-import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
-import mezz.jei.api.registration.ISubtypeRegistration;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
+import me.shedaniel.rei.api.client.plugins.REIClientPlugin;
+import me.shedaniel.rei.api.client.registry.entry.CollapsibleEntryRegistry;
+import me.shedaniel.rei.api.common.entry.EntryStack;
+import me.shedaniel.rei.api.common.plugins.REIServerPlugin;
+import net.minecraft.text.LiteralText;
+import net.minecraft.util.Identifier;
+
+import java.util.function.Predicate;
 
 /** Subtype interpretable registration mostly */
-@JeiPlugin
-public class JEIPlugin implements IModPlugin {
+public class JEIPlugin implements REIClientPlugin {
 
-	@Override
-	public ResourceLocation getPluginUid() {
-		return new ResourceLocation(AnimalCrops.modID, "jei");
+	public Identifier getPluginUid() {
+		return new Identifier(AnimalCrops.modID, "rei");
+	}
+
+	private record checkIdentPredicate(Identifier ident) implements Predicate<EntryStack<?>> {
+		public boolean test(EntryStack<?> e) {
+			return e.getIdentifier().equals(ident);
+		}
+	}
+
+	private void registerCollapse(CollapsibleEntryRegistry registry, String... name) {
+		for (String n : name) {
+			Identifier i = Registration.getResource(n);
+			registry.group(i, new LiteralText(n), new checkIdentPredicate(i));
+		}
 	}
 
 	@Override
-	public void registerItemSubtypes(ISubtypeRegistration registry) {
-		IIngredientSubtypeInterpreter<ItemStack> interpreter = (stack, context) -> Utils.getEntityID(stack.getTag()).orElse("");
-		registry.registerSubtypeInterpreter(Registration.seeds, interpreter);
-		registry.registerSubtypeInterpreter(Registration.anemonemalSeeds, interpreter);
-		registry.registerSubtypeInterpreter(Registration.spores, interpreter);
-		registry.registerSubtypeInterpreter(Registration.magnemoneSpores, interpreter);
+	public void registerCollapsibleEntries(CollapsibleEntryRegistry registry) {
+		registerCollapse(registry, "crops", "anemonemal", "shrooms", "magnemones");
 	}
 }
