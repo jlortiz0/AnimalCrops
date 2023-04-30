@@ -4,7 +4,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSyntaxException;
-import knightminer.animalcrops.core.Config;
+import knightminer.animalcrops.core.Configuration;
 import knightminer.animalcrops.core.Registration;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -64,10 +64,10 @@ public class ConfigCondition implements LootItemCondition {
   }
 
   static {
-    add("seeds", Config.animalCrops::doesDrop);
-    add("anemonemal", Config.anemonemals::doesDrop);
-    add("shrooms", Config.animalShrooms::doesDrop);
-    add("magnemone", Config.magnemones::doesDrop);
-    add("pollen", Config.dropAnimalPollen::get);
+    add("seeds", Configuration.animalCrops::doesDrop);
+    add("anemonemal", Configuration.anemonemals::doesDrop);
+    add("shrooms", Configuration.animalShrooms::doesDrop);
+    add("magnemone", Configuration.magnemones::doesDrop);
+    add("pollen", Configuration.dropAnimalPollen::get);
   }
 }

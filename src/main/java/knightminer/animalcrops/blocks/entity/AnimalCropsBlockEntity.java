@@ -4,27 +4,23 @@ import knightminer.animalcrops.AnimalCrops;
 import knightminer.animalcrops.core.AnimalTags;
 import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.core.Utils;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.Entity.RemovalReason;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.monster.Slime;
-import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.SlimeEntity;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.world.ServerWorldAccess;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 public class AnimalCropsBlockEntity extends BlockEntity {
 	/** Tag to use to store the random direction */
@@ -35,6 +31,8 @@ public class AnimalCropsBlockEntity extends BlockEntity {
 	 * Typically null except on the client side (only cached during fancy crop rendering)
 	 * */
 	private LivingEntity entity;
+	private String entityId;
+	private int direction;
 
 	public AnimalCropsBlockEntity(BlockPos pos, BlockState state) {
 		super(Registration.cropsTE, pos, state);
@@ -53,13 +51,13 @@ public class AnimalCropsBlockEntity extends BlockEntity {
 			return;
 		}
 
-		CompoundTag data = this.getTileData();
-		data.putString(Utils.ENTITY_TAG, entityID);
-		assert level != null;
-		if (!level.isClientSide()) {
-			data.putInt(TAG_DIRECTION, level.random.nextInt(4));
-		}
-		this.setChanged();
+		this.entityId = entityID;
+		this.direction = this.world.random.nextInt(4);
+		this.markDirty();
+	}
+
+	public Optional<String> getEntityId() {
+		return Optional.ofNullable(this.entityId);
 	}
 
 	/**
@@ -75,12 +73,7 @@ public class AnimalCropsBlockEntity extends BlockEntity {
 		}
 
 		// create the entity from the tile data
-		assert level != null;
-		Entity created = Utils.getEntityID(this.getTileData())
-													.filter(AnimalCropsBlockEntity::entityValid)
-													.flatMap(loc -> EntityType.byString(loc))
-													.map((type) -> type.create(level))
-													.orElse(null);
+		Entity created = EntityType.get(entityId).map((type) -> type.create(world)).orElse(null);
 		if (created == null) {
 			return null;
 		}
@@ -88,22 +81,19 @@ public class AnimalCropsBlockEntity extends BlockEntity {
 		// if the entity is not MobEntity, discard it
 		// should not happen as all spawn eggs are MobEntity
 		if (!(created instanceof LivingEntity entity)) {
-			created.remove(RemovalReason.DISCARDED);
+			created.remove(Entity.RemovalReason.DISCARDED);
 			AnimalCrops.log.error("Attempted to create invalid non-living entity " + created.getType());
 			return null;
 		}
 
 		// set the age for ageable entities
-		if (getBlockState().getFluidState().getType() == Fluids.WATER) {
-			entity.wasTouchingWater = true;
-		}
 		float angle = this.getAngle();
-		entity.setYRot(angle);
-		entity.yRotO = angle;
-		entity.yHeadRotO = entity.yHeadRot = angle;
-		entity.yBodyRotO = entity.yBodyRot = angle;
+		entity.setYaw(angle);
+		entity.prevYaw = angle;
+		entity.prevHeadYaw = entity.headYaw = angle;
+		entity.prevBodyYaw = entity.bodyYaw = angle;
 
-		if (entity instanceof Mob mob) {
+		if (entity instanceof MobEntity mob) {
 			mob.setBaby(true);
 		}
 
@@ -119,11 +109,11 @@ public class AnimalCropsBlockEntity extends BlockEntity {
 	 * @return  Angle in 90 degree increments
 	 */
 	public float getAngle() {
-		int index = this.getTileData().getInt(TAG_DIRECTION);
+		int index = this.direction;
 		if (index < 0 || index > 3) {
-			return Direction.SOUTH.toYRot();
+			return Direction.SOUTH.asRotation();
 		}
-		return Direction.from2DDataValue(index).toYRot();
+		return Direction.byId(index).asRotation();
 	}
 
 	/**
@@ -137,49 +127,25 @@ public class AnimalCropsBlockEntity extends BlockEntity {
 		}
 
 		// set position
-		entity.setPos(worldPosition.getX() + 0.5, worldPosition.getY(), worldPosition.getZ() + 0.5);
+		entity.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
 
 		// set entity data where relevant
-		assert level != null;
-		Mob mob = null;
-		if (level instanceof ServerLevelAccessor accessor && entity instanceof Mob) {
-			mob = (Mob) entity;
-			mob.finalizeSpawn(accessor, level.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.SPAWN_EGG, null, null);
+		MobEntity mob = null;
+		if (world instanceof ServerWorldAccess && entity instanceof MobEntity) {
+			mob = (MobEntity) entity;
+			mob.initialize((ServerWorldAccess) world, world.getLocalDifficulty(entity.getBlockPos()), SpawnReason.SPAWN_EGG, null, null);
 		}
 
 		// slime sizes should not be bigger than 2
-		if(entity instanceof Slime slime && slime.getSize() > 2) {
+		if(entity instanceof SlimeEntity slime && slime.getSize() > 2) {
 			Utils.setSlimeSize(slime, 2);
 		}
 
 		// spawn
-		entity.level = level;
-		level.addFreshEntity(entity);
+		entity.world = world;
+		world.spawnEntity(entity);
 		if (mob != null) {
 			mob.playAmbientSound();
-		}
-	}
-
-
-	/* NBT */
-
-	@Nonnull
-	@Override
-	public CompoundTag getUpdateTag() {
-		// only the data in the forge tile data tag needs to be sent over the network
-		return getTileData().copy();
-	}
-
-	@Override
-	public ClientboundBlockEntityDataPacket getUpdatePacket() {
-		return ClientboundBlockEntityDataPacket.create(this);
-	}
-
-	@Override
-	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-		CompoundTag tag = pkt.getTag();
-		if (tag != null) {
-			getTileData().merge(tag);
 		}
 	}
 
@@ -191,11 +157,25 @@ public class AnimalCropsBlockEntity extends BlockEntity {
 	 * @return  True if the ID is valid, false otherwise
 	 */
 	private static boolean entityValid(String entityID) {
-		ResourceLocation loc = ResourceLocation.tryParse(entityID);
-		if (loc != null && ForgeRegistries.ENTITIES.containsKey(loc)) {
-			EntityType<?> type = ForgeRegistries.ENTITIES.getValue(loc);
-			return type != null && type.is(AnimalTags.PLANTABLE);
+		Identifier loc = Identifier.tryParse(entityID);
+		if (loc != null && Registry.ENTITY_TYPE.containsId(loc)) {
+			EntityType<?> type = Registry.ENTITY_TYPE.get(loc);
+			return type != null && type.isIn(AnimalTags.PLANTABLE);
 		}
 		return false;
+	}
+
+	@Override
+	public void writeNbt(NbtCompound nbt) {
+		nbt.putInt("direction", this.direction);
+		nbt.putString("entityType", this.entityId);
+		super.writeNbt(nbt);
+	}
+
+	@Override
+	public void readNbt(NbtCompound nbt) {
+		super.readNbt(nbt);
+		this.direction = nbt.getInt("direction");
+		this.entityId = nbt.getString("entityType");
 	}
 }

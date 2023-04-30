@@ -1,25 +1,26 @@
 package knightminer.animalcrops.items;
 
+import knightminer.animalcrops.AnimalCrops;
 import knightminer.animalcrops.core.AnimalTags;
-import knightminer.animalcrops.core.Config;
+import knightminer.animalcrops.core.Configuration;
 import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.core.Utils;
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity.RemovalReason;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
+import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.world.World;
+import net.minecraft.item.Item;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -30,58 +31,58 @@ import java.util.Objects;
  */
 public class AnimalPollenItem extends Item {
 
-  public AnimalPollenItem(Properties props) {
+  public AnimalPollenItem(Item.Settings props) {
     super(props);
   }
 
   @Override
-  public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity entity, InteractionHand hand) {
+  public ActionResult useOnEntity(ItemStack stack, PlayerEntity player, LivingEntity entity, Hand hand) {
     EntityType<?> type = entity.getType();
-    if (type.is(AnimalTags.POLLEN_REACTIVE)) {
+    if (type.isIn(AnimalTags.POLLEN_REACTIVE)) {
       // next, check which type of seed we are grabbing
       Item item = null;
-      if (type.is(AnimalTags.ANIMAL_CROPS)) {
+      if (type.isIn(AnimalTags.ANIMAL_CROPS)) {
         item = Registration.seeds;
       }
-      else if (type.is(AnimalTags.ANEMONEMAL)) {
+      else if (type.isIn(AnimalTags.ANEMONEMAL)) {
         item = Registration.anemonemalSeeds;
       }
-      else if (type.is(AnimalTags.ANIMAL_SHROOMS)) {
+      else if (type.isIn(AnimalTags.ANIMAL_SHROOMS)) {
         item = Registration.spores;
       }
-      else if (type.is(AnimalTags.MAGNEMONES)) {
+      else if (type.isIn(AnimalTags.MAGNEMONES)) {
         item = Registration.magnemoneSpores;
       }
       // its possible the type matches none because someone used tags wrongly
       if (item != null) {
         // create the seed item
         ItemStack seeds = new ItemStack(item);
-        Utils.setEntityId(seeds, Objects.requireNonNull(type.getRegistryName()).toString());
-        player.setItemInHand(hand, Utils.fillContainer(player, stack, seeds));
+        Utils.setEntityId(seeds, Objects.requireNonNull(type.getUntranslatedName()).toString());
+        player.setStackInHand(hand, Utils.fillContainer(player, stack, seeds));
 
         // effects
-        entity.playSound(SoundEvents.NETHER_WART_BREAK, 1.0F, 0.8F);
+        entity.playSound(SoundEvents.BLOCK_NETHER_WART_BREAK, 1.0F, 0.8F);
         spawnEntityParticles(entity, ParticleTypes.MYCELIUM, 15);
-        switch (Config.pollenAction.get()) {
+        switch (AnimalCrops.config.pollenAction) {
           case CONSUME -> {
             // spawn death particles and remove the entity
             spawnEntityParticles(entity, ParticleTypes.POOF, 20);
-            if (!entity.getLevel().isClientSide()) {
-              entity.remove(RemovalReason.KILLED);
+            if (!entity.getWorld().isClient) {
+              entity.remove(Entity.RemovalReason.KILLED);
             }
           }
           case DAMAGE -> {
-            entity.hurt(DamageSource.CACTUS, 4);
+            entity.damage(DamageSource.CACTUS, 4);
             spawnEntityParticles(entity, ParticleTypes.DAMAGE_INDICATOR, 2);
           }
         }
-        return InteractionResult.SUCCESS;
+        return ActionResult.SUCCESS;
       }
     }
 
     // tell the player why nothing happened
-    player.displayClientMessage(new TranslatableComponent(this.getDescriptionId() + ".invalid", type.getDescription()), true);
-    return InteractionResult.SUCCESS;
+    player.sendMessage(new TranslatableText(this.getTranslationKey() + ".invalid", type.getTranslationKey()), true);
+    return ActionResult.SUCCESS;
   }
 
   /**
@@ -90,19 +91,19 @@ public class AnimalPollenItem extends Item {
    * @param particle  Particle to spawn
    * @param count     Number to spawn
    */
-  private static void spawnEntityParticles(LivingEntity entity, ParticleOptions particle, int count) {
-    Level world = entity.getLevel();
+  private static void spawnEntityParticles(LivingEntity entity, ParticleEffect particle, int count) {
+    World world = entity.getWorld();
     for(int k = 0; k < count; k++) {
       double speedX = world.random.nextGaussian() * 0.02D;
       double speedY = world.random.nextGaussian() * 0.02D;
       double speedZ = world.random.nextGaussian() * 0.02D;
-      world.addParticle(particle, entity.getRandomX(1.0D), entity.getRandomY(), entity.getRandomZ(1.0D), speedX, speedY, speedZ);
+      world.addParticle(particle, entity.getParticleX(1.0D), entity.getRandomBodyY(), entity.getParticleZ(1.0D), speedX, speedY, speedZ);
     }
   }
 
   @Override
-  public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
-    tooltip.add(new TranslatableComponent(this.getDescriptionId() + ".tooltip"));
+  public void appendTooltip(ItemStack stack, @Nullable World level, List<Text> tooltip, TooltipContext flagIn) {
+    tooltip.add(new TranslatableText(this.getTranslationKey() + ".tooltip"));
   }
 
   /** Valid actions for spores, as set by the config */

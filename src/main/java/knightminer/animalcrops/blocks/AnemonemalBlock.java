@@ -2,10 +2,22 @@ package knightminer.animalcrops.blocks;
 
 import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.items.AnimalSeedsItem;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.entity.EntityType;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.tag.TagKey;
 import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -23,40 +35,40 @@ import java.util.function.Supplier;
  * Common logic for water and lava crops
  */
 public class AnemonemalBlock extends AnimalCropsBlock {
-  private final Supplier<? extends FlowingFluid> fluid;
+  private final Supplier<? extends Fluid> fluid;
   private final TagKey<Fluid> tag;
-  public AnemonemalBlock(Properties props, TagKey<EntityType<?>> entityTag, Supplier<FlowingFluid> fluid, TagKey<Fluid> tag) {
+  public AnemonemalBlock(AbstractBlock.Settings props, TagKey<EntityType<?>> entityTag, Supplier<Fluid> fluid, TagKey<Fluid> tag) {
     super(props, entityTag);
     this.fluid = fluid;
     this.tag = tag;
   }
 
   @Override
-  protected AnimalSeedsItem getSeed() {
+  protected AnimalSeedsItem getSeedsItem() {
     return Registration.anemonemalSeeds;
   }
 
   @Override
-  protected boolean mayPlaceOn(BlockState state, BlockGetter worldIn, BlockPos pos) {
-    return state.isFaceSturdy(worldIn, pos, Direction.UP) && state.getBlock() != Blocks.MAGMA_BLOCK;
+  public boolean canPlaceAt(BlockState state, WorldView worldIn, BlockPos pos) {
+    return state.isSideSolidFullSquare(worldIn, pos, Direction.UP) && state.getBlock() != Blocks.MAGMA_BLOCK;
   }
 
   @Nullable
   @Override
-  public BlockState getStateForPlacement(BlockPlaceContext context) {
-    FluidState fluid = context.getLevel().getFluidState(context.getClickedPos());
-    return fluid.is(tag) && fluid.getAmount() == 8 ? super.getStateForPlacement(context) : null;
+  public BlockState getPlacementState(ItemPlacementContext context) {
+    FluidState fluid = context.getWorld().getFluidState(context.getBlockPos());
+    return fluid.isIn(tag) && fluid.getHeight() == 8 ? super.getPlacementState(context) : null;
   }
 
 
   /* Fluid logic */
 
   @Override
-  public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor world, BlockPos currentPos, BlockPos facingPos) {
-    BlockState state = super.updateShape(stateIn, facing, facingState, world, currentPos, facingPos);
+  public BlockState getStateForNeighborUpdate(BlockState stateIn, Direction facing, BlockState facingState, WorldAccess world, BlockPos currentPos, BlockPos facingPos) {
+    BlockState state = super.getStateForNeighborUpdate(stateIn, facing, facingState, world, currentPos, facingPos);
     if (!state.isAir()) {
       Fluid fluid = this.fluid.get();
-      world.scheduleTick(currentPos, fluid, fluid.getTickDelay(world));
+      world.createAndScheduleFluidTick(currentPos, fluid, fluid.getTickRate(world));
     }
 
     return state;
@@ -66,6 +78,6 @@ public class AnemonemalBlock extends AnimalCropsBlock {
   @Deprecated
   @Override
   public FluidState getFluidState(BlockState state) {
-    return fluid.get().getSource(false);
+    return fluid.get().getDefaultState();
   }
 }

@@ -5,8 +5,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSyntaxException;
 import knightminer.animalcrops.AnimalCrops;
-import knightminer.animalcrops.core.Config;
-import knightminer.animalcrops.core.Config.AnimalCropType;
+import knightminer.animalcrops.core.Configuration;
+import knightminer.animalcrops.core.Configuration.AnimalCropType;
 import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.core.Utils;
 import net.minecraft.util.GsonHelper;
@@ -76,9 +76,9 @@ public class RandomAnimalLootFunction extends LootItemConditionalFunction {
 
   /* Setup prop list */
   static {
-    TYPES.put("crops", Config.animalCrops);
-    TYPES.put("anemonemal", Config.anemonemals);
-    TYPES.put("shrooms", Config.animalShrooms);
-    TYPES.put("magnemone", Config.magnemones);
+    TYPES.put("crops", Configuration.animalCrops);
+    TYPES.put("anemonemal", Configuration.anemonemals);
+    TYPES.put("shrooms", Configuration.animalShrooms);
+    TYPES.put("magnemone", Configuration.magnemones);
   }
 }

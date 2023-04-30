@@ -1,14 +1,15 @@
 package knightminer.animalcrops.items;
 
 import knightminer.animalcrops.core.Utils;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.block.Block;
+import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.EntityType;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -18,28 +19,29 @@ import java.util.List;
  */
 public class AnimalSeedsItem extends BlockItem {
 
-	public AnimalSeedsItem(Block crops, Properties props) {
+	public AnimalSeedsItem(Block crops, Item.Settings props) {
 		super(crops, props);
 	}
 
 	// restore default, we call seeds seeds and crops crops
+
 	@Override
-	public String getDescriptionId() {
-		return this.getOrCreateDescriptionId();
+	public String getTranslationKey() {
+		return this.getOrCreateTranslationKey();
 	}
 
 	@Override
-	public Component getName(ItemStack stack) {
-    return Utils.getEntityID(stack.getTag())
-                .flatMap(EntityType::byString)
-                .map(EntityType::getDescriptionId)
-                .map((key) -> new TranslatableComponent(this.getDescriptionId(), new TranslatableComponent(key)))
-                .orElseGet(() -> new TranslatableComponent(this.getDescriptionId() + ".default"));
+	public Text getName(ItemStack stack) {
+    return Utils.getEntityID(stack.getNbt())
+                .flatMap(EntityType::get)
+                .map(EntityType::getTranslationKey)
+                .map((key) -> new TranslatableText(this.getTranslationKey(), new TranslatableText(key)))
+                .orElseGet(() -> new TranslatableText(this.getTranslationKey() + ".default"));
   }
 
   @Override
-  public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
-    super.appendHoverText(stack, level, tooltip, flagIn);
-    tooltip.add(new TranslatableComponent(this.getDescriptionId() + ".tooltip"));
+  public void appendTooltip(ItemStack stack, @Nullable World level, List<Text> tooltip, TooltipContext flagIn) {
+    super.appendTooltip(stack, level, tooltip, flagIn);
+    tooltip.add(new TranslatableText(this.getTranslationKey() + ".tooltip"));
   }
 }

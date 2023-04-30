@@ -14,6 +14,7 @@ import knightminer.animalcrops.json.SetAnimalLootFunction;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -133,8 +134,8 @@ public class Registration {
    * @param name  Resource path
    * @return  Animal Crops resource location
    */
-  public static ResourceLocation getResource(String name) {
-    return new ResourceLocation(AnimalCrops.modID, name);
+  public static Identifier getResource(String name) {
+    return new Identifier(AnimalCrops.modID, name);
   }
 
   /**
