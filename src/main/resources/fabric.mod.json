@@ -32,6 +32,9 @@
       "knightminer.animalcrops.datagen.EntryPoint"
     ]
   },
+  "mixins": [
+    "animalcrops.mixins.json"
+  ],
 
   "depends": {
     "fabricloader": ">=0.14.6",

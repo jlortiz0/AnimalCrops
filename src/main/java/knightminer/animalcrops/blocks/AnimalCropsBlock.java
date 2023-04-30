@@ -6,16 +6,17 @@ import knightminer.animalcrops.core.AnimalTags;
 import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.core.Utils;
 import knightminer.animalcrops.items.AnimalSeedsItem;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.BlockEntityProvider;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.CropBlock;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootTables;
 import net.minecraft.tag.TagKey;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -27,6 +28,7 @@ import net.minecraft.world.WorldView;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Base crop logic, used for plains crops directly
@@ -47,7 +49,7 @@ public class AnimalCropsBlock extends CropBlock implements BlockEntityProvider {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView worldIn, BlockPos pos) {
-		return true || state.isIn(AnimalTags.CROP_SOIL);
+		return worldIn.getBlockState(pos.down()).isIn(AnimalTags.CROP_SOIL);
 	}
 
 
@@ -73,7 +75,12 @@ public class AnimalCropsBlock extends CropBlock implements BlockEntityProvider {
 		// set the crop's entity
 		BlockEntity be = world.getBlockEntity(pos);
 		if (be instanceof AnimalCropsBlockEntity animal) {
-			Utils.getEntityID(stack.getNbt()).ifPresent(animal::setEntity);
+			Optional<Identifier> ent = Utils.getEntityID(stack.getNbt());
+			ent.ifPresent(animal::setEntity);
+			if (ent.isEmpty()) {
+				world.breakBlock(pos, false);
+				dropStack(world, pos, new ItemStack(Registration.pollen));
+			}
 		}
 	}
 
