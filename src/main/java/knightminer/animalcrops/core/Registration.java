@@ -7,7 +7,6 @@ import knightminer.animalcrops.blocks.AnimalShroomBlock;
 import knightminer.animalcrops.blocks.entity.AnimalCropsBlockEntity;
 import knightminer.animalcrops.items.AnimalPollenItem;
 import knightminer.animalcrops.items.AnimalSeedsItem;
-import knightminer.animalcrops.json.AddEntryLootModifier;
 import knightminer.animalcrops.json.ConfigCondition;
 import knightminer.animalcrops.json.RandomAnimalLootFunction;
 import knightminer.animalcrops.json.SetAnimalLootFunction;
@@ -15,54 +14,23 @@ import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityT
 import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.ComposterBlock;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.core.Registry;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
-import net.minecraft.loot.LootPool;
 import net.minecraft.loot.condition.LootConditionType;
-import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.DefaultedRegistry;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.ComposterBlock;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
-import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
-import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
-import net.minecraftforge.registries.ObjectHolder;
-import org.checkerframework.checker.units.qual.A;
-
-import javax.annotation.Nonnull;
 
 @SuppressWarnings("unused")
 public class Registration {
 
-  private static final AbstractBlock.Settings cropProps = AbstractBlock.Settings.of(Material.PLANT).ticksRandomly().strength(0).sounds(BlockSoundGroup.CROP).noCollision();;=
+  private static final AbstractBlock.Settings cropProps = AbstractBlock.Settings.of(Material.PLANT).ticksRandomly().strength(0).sounds(BlockSoundGroup.CROP).noCollision();
   private static final AbstractBlock.Settings cropNetherProps = AbstractBlock.Settings.of(Material.PLANT, DyeColor.RED).ticksRandomly().strength(0).sounds(BlockSoundGroup.NETHER_WART).noCollision();
 
   public static final Block crops = register(Registry.BLOCK, new AnimalCropsBlock(cropProps, AnimalTags.ANIMAL_CROPS), "crops"),
@@ -96,12 +64,6 @@ public class Registration {
     Loot.setAnimalFunction = register(Registry.LOOT_FUNCTION_TYPE, "set_animal", new LootFunctionType(SetAnimalLootFunction.SERIALIZER));
     Loot.randomAnimalFunction = register(Registry.LOOT_FUNCTION_TYPE, "random_animal", new LootFunctionType(RandomAnimalLootFunction.SERIALIZER));
     Loot.configCondition = register(Registry.LOOT_CONDITION_TYPE, "config", new LootConditionType(ConfigCondition.SERIALIZER));
-  }
-
-  @SubscribeEvent
-  static void registerGlobalLootModifiers(RegistryEvent.Register<GlobalLootModifierSerializer<?>> event) {
-    IForgeRegistry<GlobalLootModifierSerializer<?>> r = event.getRegistry();
-    register(r, new AddEntryLootModifier.Serializer(), "add_entry");
   }
 
 

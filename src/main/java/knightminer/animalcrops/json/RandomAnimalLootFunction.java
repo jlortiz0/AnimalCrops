@@ -29,18 +29,15 @@ import java.util.function.Supplier;
  */
 public class RandomAnimalLootFunction extends ConditionalLootFunction {
 
-  public record AnimalLootTypeEntry(TagKey<EntityType<?>> tag, Supplier<Boolean> option) {}
-  private static final Map<String,AnimalLootTypeEntry> TYPES = new HashMap<>();
+  private static final Map<String,TagKey<EntityType<?>> > TYPES = new HashMap<>();
   public static final Serializer SERIALIZER = new Serializer();
 
   private final String type;
   private final TagKey<EntityType<?>> tag;
-  private final Supplier<Boolean> configOption;
-  protected RandomAnimalLootFunction(LootCondition[] conditions, String type, TagKey<EntityType<?>> tag, Supplier<Boolean> option) {
+  protected RandomAnimalLootFunction(LootCondition[] conditions, String type, TagKey<EntityType<?>> tag) {
     super(conditions);
     this.type = type;
     this.tag = tag;
-    this.configOption = option;
   }
 
   @Override
@@ -50,7 +47,6 @@ public class RandomAnimalLootFunction extends ConditionalLootFunction {
 
   @Override
   protected ItemStack process(ItemStack stack, LootContext context) {
-    if (!configOption.get()) return stack;
     EntityType<?> type = Configuration.getRandomValue(tag, context.getRandom());
     // prevent crash if empty, the config condition should handle this though
     if (type == null) {
@@ -72,19 +68,19 @@ public class RandomAnimalLootFunction extends ConditionalLootFunction {
     @Override
     public RandomAnimalLootFunction fromJson(JsonObject json, JsonDeserializationContext ctx, LootCondition[] conditions) {
       String type = JsonHelper.getString(json, "type").toLowerCase(Locale.ROOT);
-      AnimalLootTypeEntry animalCropType = TYPES.get(type);
+      TagKey<EntityType<?>> animalCropType = TYPES.get(type);
       if (animalCropType == null) {
         throw new JsonSyntaxException("Invalid animal tag '" + type + "'");
       }
-      return new RandomAnimalLootFunction(conditions, type, animalCropType.tag(), animalCropType.option());
+      return new RandomAnimalLootFunction(conditions, type, animalCropType);
     }
   }
 
   /* Setup prop list */
   static {
-    TYPES.put("crops", new AnimalLootTypeEntry(AnimalTags.DROPPABLE_ANIMAL_CROPS, () -> AnimalCrops.config.animalCrops));
-    TYPES.put("anemonemal", new AnimalLootTypeEntry(AnimalTags.DROPPABLE_ANEMONEMAL, () -> AnimalCrops.config.anemonemals));
-    TYPES.put("shrooms", new AnimalLootTypeEntry(AnimalTags.DROPPABLE_ANIMAL_SHROOMS, () -> AnimalCrops.config.animalShrooms));
-    TYPES.put("magnemone", new AnimalLootTypeEntry(AnimalTags.DROPPABLE_MAGNEMONES, () -> AnimalCrops.config.magnemones));
+    TYPES.put("crops",AnimalTags.DROPPABLE_ANIMAL_CROPS);
+    TYPES.put("anemonemal", AnimalTags.DROPPABLE_ANEMONEMAL);
+    TYPES.put("shrooms", AnimalTags.DROPPABLE_ANIMAL_SHROOMS);
+    TYPES.put("magnemone", AnimalTags.DROPPABLE_MAGNEMONES);
   }
 }

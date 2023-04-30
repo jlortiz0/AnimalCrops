@@ -4,13 +4,13 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSyntaxException;
-import knightminer.animalcrops.core.Configuration;
+import knightminer.animalcrops.AnimalCrops;
 import knightminer.animalcrops.core.Registration;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.Serializer;
-import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
+import net.minecraft.loot.condition.LootCondition;
+import net.minecraft.loot.condition.LootConditionType;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.util.JsonHelper;
+import net.minecraft.util.JsonSerializer;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -20,7 +20,7 @@ import java.util.function.BooleanSupplier;
 /**
  * Conditions a loot table entry based on config
  */
-public class ConfigCondition implements LootItemCondition {
+public class ConfigCondition implements LootCondition {
   private static final Map<String,ConfigCondition> PROPS = new HashMap<>();
   public static final ConfigSerializer SERIALIZER = new ConfigSerializer();
 
@@ -32,7 +32,7 @@ public class ConfigCondition implements LootItemCondition {
   }
 
   @Override
-  public LootItemConditionType getType() {
+  public LootConditionType getType() {
     return Registration.Loot.configCondition;
   }
 
@@ -41,10 +41,10 @@ public class ConfigCondition implements LootItemCondition {
     return supplier.getAsBoolean();
   }
 
-  public static class ConfigSerializer implements Serializer<ConfigCondition> {
+  public static class ConfigSerializer implements JsonSerializer<ConfigCondition> {
     @Override
-    public ConfigCondition deserialize(JsonObject json, JsonDeserializationContext context) {
-      String prop = GsonHelper.getAsString(json, "prop");
+    public ConfigCondition fromJson(JsonObject json, JsonDeserializationContext context) {
+      String prop = JsonHelper.getString(json, "prop");
       ConfigCondition config = PROPS.get(prop.toLowerCase(Locale.ROOT));
       if (config == null) {
         throw new JsonSyntaxException("Invalid config property name '" + prop + "'");
@@ -53,7 +53,7 @@ public class ConfigCondition implements LootItemCondition {
     }
 
     @Override
-    public void serialize(JsonObject json, ConfigCondition config, JsonSerializationContext context) {
+    public void toJson(JsonObject json, ConfigCondition config, JsonSerializationContext context) {
       json.addProperty("prop", config.name);
     }
   }
@@ -64,10 +64,10 @@ public class ConfigCondition implements LootItemCondition {
   }
 
   static {
-    add("seeds", Configuration.animalCrops::doesDrop);
-    add("anemonemal", Configuration.anemonemals::doesDrop);
-    add("shrooms", Configuration.animalShrooms::doesDrop);
-    add("magnemone", Configuration.magnemones::doesDrop);
-    add("pollen", Configuration.dropAnimalPollen::get);
+    add("seeds", () -> AnimalCrops.config.animalCrops);
+    add("anemonemal", () -> AnimalCrops.config.anemonemals);
+    add("shrooms", () -> AnimalCrops.config.animalShrooms);
+    add("magnemone", () -> AnimalCrops.config.magnemones);
+    add("pollen", () -> AnimalCrops.config.dropAnimalPollen);
   }
 }
