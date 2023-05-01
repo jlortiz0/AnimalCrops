@@ -6,10 +6,6 @@
       "rolls": 1.0,
       "conditions": [
         {
-          "condition": "minecraft:block_state_property",
-          "block": "minecraft:nether_sprouts"
-        },
-        {
           "condition": "minecraft:inverted",
           "term": {
             "condition": "minecraft:match_tool",

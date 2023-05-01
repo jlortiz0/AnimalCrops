@@ -19,7 +19,11 @@ public class BlockTagProvider extends FabricTagProvider<Block> {
 
 	@Override
 	protected void generateTags() {
-		getOrCreateTagBuilder(AnimalTags.CROP_SOIL).add(Blocks.GRASS_BLOCK, Blocks.PODZOL);
+		getOrCreateTagBuilder(AnimalTags.CROP_SOIL).addOptionalTag(BlockTags.DIRT).add(Blocks.FARMLAND);
 		getOrCreateTagBuilder(AnimalTags.SHROOM_SOIL).add(Blocks.SOUL_SOIL, Blocks.SOUL_SAND);
+
+		getOrCreateTagBuilder(AnimalTags.DROPS_GRASS).add(Blocks.GRASS, Blocks.FERN, Blocks.TALL_GRASS, Blocks.LARGE_FERN);
+		getOrCreateTagBuilder(AnimalTags.DROPS_NETHER).add(Blocks.NETHER_SPROUTS);
+		getOrCreateTagBuilder(AnimalTags.DROPS_SEA).add(Blocks.SEAGRASS, Blocks.TALL_SEAGRASS);
 	}
 }

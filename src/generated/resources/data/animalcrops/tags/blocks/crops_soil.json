@@ -1,7 +1,10 @@
 {
   "replace": false,
   "values": [
-    "minecraft:grass_block",
-    "minecraft:podzol"
+    {
+      "id": "#minecraft:dirt",
+      "required": false
+    },
+    "minecraft:farmland"
   ]
 }

@@ -21,6 +21,10 @@ public class AnimalTags {
 	/** Blocks valid for planting animal spores */
 	public static final TagKey<Block> SHROOM_SOIL = blockTag("shroom_soil");
 
+	public static final TagKey<Block> DROPS_GRASS = blockTag("drops_grass");
+	public static final TagKey<Block> DROPS_NETHER = blockTag("drops_nether_grass");
+	public static final TagKey<Block> DROPS_SEA = blockTag("drops_sea_grass");
+
 	// entities
 
 	/** Entities that are able to be planted */

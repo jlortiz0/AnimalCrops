@@ -10,22 +10,6 @@
           "prop": "anemonemal"
         },
         {
-          "condition": "minecraft:alternative",
-          "terms": [
-            {
-              "condition": "minecraft:block_state_property",
-              "block": "minecraft:seagrass"
-            },
-            {
-              "condition": "minecraft:block_state_property",
-              "block": "minecraft:tall_seagrass",
-              "properties": {
-                "half": "lower"
-              }
-            }
-          ]
-        },
-        {
           "condition": "minecraft:survives_explosion"
         },
         {
