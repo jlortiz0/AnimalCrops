@@ -21,5 +21,16 @@
 
   "item.animalcrops.pollen": "Animal Pollen",
   "item.animalcrops.pollen.tooltip": "Use on animals to create animal seeds",
-  "item.animalcrops.pollen.invalid": "No seeds available for %s"
+  "item.animalcrops.pollen.invalid": "No seeds available for %s",
+
+  "text.autoconfig.animalcrops.option.animalCrops": "Enable Animal Seeds",
+  "text.autoconfig.animalcrops.option.anemonemals": "Enable Anemonemals",
+  "text.autoconfig.animalcrops.option.animalShrooms": "Enable Animal Shrooms",
+  "text.autoconfig.animalcrops.option.magnemones": "Enable Magnemones",
+  "text.autoconfig.animalcrops.option.canBonemeal": "Allow bonemeal",
+  "text.autoconfig.animalcrops.option.killOnPollen": "Kill animal when pollen used",
+  "text.autoconfig.animalcrops.option.damageOnPollen": "Damage animal when pollen used",
+  "text.autoconfig.animalcrops.option.dropAnimalPollen": "Enable Animal Pollen",
+
+  "text.autoconfig.animalcrops.option.renderCropEntity": "Show growing animal"
 }

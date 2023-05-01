@@ -10,6 +10,9 @@ targetCompatibility = JavaVersion.VERSION_17
 
 repositories {
   maven { url 'https://maven.shedaniel.me' }
+  maven {
+    url "https://maven.terraformersmc.com/releases/"
+  }
 }
 
 configurations {
@@ -58,6 +61,7 @@ dependencies {
     exclude(group: "net.fabricmc.fabric-api")
   }
   include "me.shedaniel.cloth:cloth-config-fabric:6.4.90"
+  modImplementation "com.terraformersmc:modmenu:3.2.5"
 
   // compile against the JEI API but do not include it at runtime
   modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:$rei_version")

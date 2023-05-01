@@ -64,22 +64,19 @@ public class AnimalPollenItem extends Item {
         // effects
         entity.playSound(SoundEvents.BLOCK_NETHER_WART_BREAK, 1.0F, 0.8F);
         spawnEntityParticles(entity, ParticleTypes.MYCELIUM, 15);
-        switch (AnimalCrops.config.pollenAction) {
-          case CONSUME -> {
-            // spawn death particles and remove the entity
-            spawnEntityParticles(entity, ParticleTypes.POOF, 20);
-            if (!entity.getWorld().isClient) {
-              entity.remove(Entity.RemovalReason.KILLED);
-            }
+        if (AnimalCrops.config.killOnPollen) {
+          // spawn death particles and remove the entity
+          spawnEntityParticles(entity, ParticleTypes.POOF, 20);
+          if (!entity.getWorld().isClient) {
+            entity.remove(Entity.RemovalReason.KILLED);
           }
-          case DAMAGE -> {
+        } else if (AnimalCrops.config.damageOnPollen) {
             entity.damage(DamageSource.CACTUS, 4);
             spawnEntityParticles(entity, ParticleTypes.DAMAGE_INDICATOR, 2);
           }
         }
         return ActionResult.SUCCESS;
       }
-    }
 
     // tell the player why nothing happened
     player.sendMessage(new TranslatableText(this.getTranslationKey() + ".invalid", type.getTranslationKey()), true);
@@ -105,15 +102,5 @@ public class AnimalPollenItem extends Item {
   @Override
   public void appendTooltip(ItemStack stack, @Nullable World level, List<Text> tooltip, TooltipContext flagIn) {
     tooltip.add(new TranslatableText(this.getTranslationKey() + ".tooltip"));
-  }
-
-  /** Valid actions for spores, as set by the config */
-  public enum Action {
-    /** Entity is consumed in a cloud of smoke */
-    CONSUME,
-    /** Entity takes damage, but remains in the world */
-    DAMAGE,
-    /** No action against entity */
-    NONE
   }
 }

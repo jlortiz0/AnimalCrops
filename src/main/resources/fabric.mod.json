@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "Animal Crops",
-  "description": "Adds some Armor, Blocks, Items, Mobs and Bosses!!!!!!",
+  "description": "Grow animals from seeds",
   "authors": [
     "KnightMiner",
     "jlortiz0"
@@ -30,6 +30,9 @@
     ],
     "fabric-datagen": [
       "knightminer.animalcrops.datagen.EntryPoint"
+    ],
+    "modmenu": [
+      "knightminer.animalcrops.plugins.modmenu.ModMenuIntegration"
     ]
   },
   "mixins": [

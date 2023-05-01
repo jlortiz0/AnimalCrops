@@ -130,7 +130,7 @@ public class AnimalCropsBlockEntity extends BlockEntity {
 		}
 
 		// set position
-		entity.setPos(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+		entity.setPos(pos.getX() + 0.5, pos.getY() + 0.25, pos.getZ() + 0.5);
 
 		// set entity data where relevant
 		MobEntity mob = null;

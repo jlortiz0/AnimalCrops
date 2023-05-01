@@ -24,30 +24,15 @@ public class Configuration implements ConfigData {
 	public boolean magnemones = true;
 	// general
 	public boolean canBonemeal = true;
-	public AnimalPollenItem.Action pollenAction = AnimalPollenItem.Action.DAMAGE;
 	// grass drops
 	public boolean dropAnimalPollen = true;
+	public boolean killOnPollen = false;
+	public boolean damageOnPollen = true;
 
 	public boolean renderCropEntity = true;
-	public boolean renderAnemonemalEntity = true;
-	public boolean renderShroomEntity = true;
-	public boolean renderMagnemoneEntity = true;
 
 	public boolean shouldRenderEntity(Block block) {
-		if (block == Registration.crops) {
-			return renderCropEntity;
-		}
-		if (block == Registration.anemonemal) {
-			return renderAnemonemalEntity;
-		}
-		if (block == Registration.shrooms) {
-			return renderShroomEntity;
-		}
-		if (block == Registration.magnemone) {
-			return renderMagnemoneEntity;
-		}
-		// fallback in case some other mod extends this
-		return true;
+		return renderCropEntity;
 	}
 
 	public static Identifier getRandomValue(TagKey<EntityType<?>> tag, Random random) {
