@@ -7,6 +7,7 @@ import me.shedaniel.rei.api.client.registry.entry.CollapsibleEntryRegistry;
 import me.shedaniel.rei.api.common.entry.EntryStack;
 import me.shedaniel.rei.api.common.plugins.REIServerPlugin;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
 import java.util.function.Predicate;
@@ -27,12 +28,12 @@ public class JEIPlugin implements REIClientPlugin {
 	private void registerCollapse(CollapsibleEntryRegistry registry, String... name) {
 		for (String n : name) {
 			Identifier i = Registration.getResource(n);
-			registry.group(i, new LiteralText(n), new checkIdentPredicate(i));
+			registry.group(i, new TranslatableText("item." + i.getNamespace() + "." + i.getPath() + ".default"), new checkIdentPredicate(i));
 		}
 	}
 
 	@Override
 	public void registerCollapsibleEntries(CollapsibleEntryRegistry registry) {
-		registerCollapse(registry, "crops", "anemonemal", "shrooms", "magnemones");
+		registerCollapse(registry, "seeds", "anemonemal", "spores", "magnemone");
 	}
 }

@@ -8,7 +8,9 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -32,7 +34,7 @@ public class AnemonemalBlock extends AnimalCropsBlock {
 
   @Override
   protected AnimalSeedsItem getSeedsItem() {
-    return Registration.anemonemalSeeds;
+    return tag.equals(FluidTags.LAVA) ? Registration.magnemoneSpores : Registration.anemonemalSeeds;
   }
 
   @Override

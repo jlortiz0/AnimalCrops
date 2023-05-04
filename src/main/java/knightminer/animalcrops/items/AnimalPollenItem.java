@@ -79,7 +79,7 @@ public class AnimalPollenItem extends Item {
       }
 
     // tell the player why nothing happened
-    player.sendMessage(new TranslatableText(this.getTranslationKey() + ".invalid", type.getTranslationKey()), true);
+    player.sendMessage(new TranslatableText(this.getTranslationKey() + ".invalid", type.getName()), true);
     return ActionResult.SUCCESS;
   }
 

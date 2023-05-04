@@ -49,8 +49,4 @@ public class AnimalSeedsItem extends BlockItem {
     super.appendTooltip(stack, level, tooltip, flagIn);
     tooltip.add(new TranslatableText(this.getTranslationKey() + ".tooltip"));
   }
-
-	@Override
-	public void appendStacks(ItemGroup tab, DefaultedList<ItemStack> items) {
-	}
 }

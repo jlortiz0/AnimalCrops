@@ -27,6 +27,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
 import javax.annotation.Nullable;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -34,9 +35,6 @@ import java.util.Optional;
  * Base crop logic, used for plains crops directly
  */
 public class AnimalCropsBlock extends CropBlock implements BlockEntityProvider {
-	public TagKey<EntityType<?>> getTag() {
-		return tag;
-	}
 
 	private final TagKey<EntityType<?>> tag;
 
@@ -62,6 +60,21 @@ public class AnimalCropsBlock extends CropBlock implements BlockEntityProvider {
 		return Registration.seeds;
 	}
 
+	@Override
+	public void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks) {
+		Optional<RegistryEntryList.Named<EntityType<?>>> ls = Registry.ENTITY_TYPE.getEntryList(tag);
+		if (ls.isEmpty()) {
+			return;
+		}
+		Iterator<RegistryEntry<EntityType<?>>> i = ls.get().stream().iterator();
+		while (i.hasNext()) {
+			Optional<Identifier> ent = i.next().getKey().map(k -> k.getValue());
+			if (ent.isEmpty()) continue;
+			ItemStack is = new ItemStack(this.getSeedsItem());
+			Utils.setEntityId(is, ent.get());
+			stacks.add(is);
+		}
+	}
 
 	/* Seed logic */
 

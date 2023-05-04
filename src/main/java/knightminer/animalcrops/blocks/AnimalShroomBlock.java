@@ -38,7 +38,7 @@ public class AnimalShroomBlock extends AnimalCropsBlock {
 
 	@Override
 	protected AnimalSeedsItem getSeedsItem() {
-		return Registration.seeds;
+		return Registration.spores;
 	}
 
 	@Override
