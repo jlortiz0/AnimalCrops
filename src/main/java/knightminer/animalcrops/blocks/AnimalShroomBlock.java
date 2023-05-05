@@ -11,6 +11,7 @@ import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 import java.util.Random;
 
@@ -22,18 +23,15 @@ public class AnimalShroomBlock extends AnimalCropsBlock {
 		super(props, tag);
 	}
 
-
 	@Override
-	protected boolean canPlantOnTop(BlockState state, BlockView worldIn, BlockPos pos) {
-		return state.isIn(AnimalTags.SHROOM_SOIL);
+	public boolean canPlaceAt(BlockState state, WorldView worldIn, BlockPos pos) {
+		return worldIn.getBlockState(pos.down()).isIn(AnimalTags.SHROOM_SOIL);
 	}
 
 	// override to remove light check
 	@Override
 	public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
-		BlockPos down = pos.down();
-		BlockState below = world.getBlockState(down);
-		return this.canPlantOnTop(below, world, down);
+		return this.canPlaceAt(state, world, pos);
 	}
 
 	@Override

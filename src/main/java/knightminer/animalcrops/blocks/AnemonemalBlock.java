@@ -1,5 +1,6 @@
 package knightminer.animalcrops.blocks;
 
+import knightminer.animalcrops.core.AnimalTags;
 import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.items.AnimalSeedsItem;
 import net.minecraft.block.AbstractBlock;
@@ -39,6 +40,8 @@ public class AnemonemalBlock extends AnimalCropsBlock {
 
   @Override
   public boolean canPlaceAt(BlockState state, WorldView worldIn, BlockPos pos) {
+    if (!state.getFluidState().isIn(tag)) return false;
+    state = worldIn.getBlockState(pos.down());
     return state.isSideSolidFullSquare(worldIn, pos, Direction.UP) && state.getBlock() != Blocks.MAGMA_BLOCK;
   }
 
@@ -46,7 +49,7 @@ public class AnemonemalBlock extends AnimalCropsBlock {
   @Override
   public BlockState getPlacementState(ItemPlacementContext context) {
     FluidState fluid = context.getWorld().getFluidState(context.getBlockPos());
-    return fluid.isIn(tag) && fluid.getHeight() == 8 ? super.getPlacementState(context) : null;
+    return fluid.isIn(tag) && fluid.getLevel() == 8 ? super.getPlacementState(context) : null;
   }
 
 

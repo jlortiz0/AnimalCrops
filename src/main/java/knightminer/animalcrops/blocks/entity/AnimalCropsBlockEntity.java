@@ -12,6 +12,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.SlimeEntity;
+import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -96,7 +97,7 @@ public class AnimalCropsBlockEntity extends BlockEntity {
 		entity.prevHeadYaw = entity.headYaw = angle;
 		entity.prevBodyYaw = entity.bodyYaw = angle;
 
-		if (entity instanceof MobEntity mob) {
+		if (entity instanceof PassiveEntity mob) {
 			mob.setBaby(true);
 		}
 

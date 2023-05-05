@@ -18,6 +18,7 @@ import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.util.math.Vec3d;
 
 public class RenderAnimalCrops implements BlockEntityRenderer<AnimalCropsBlockEntity> {
@@ -52,6 +53,7 @@ public class RenderAnimalCrops implements BlockEntityRenderer<AnimalCropsBlockEn
     stack.translate(0, -1.5, 0);
     if (rend instanceof LivingEntityRenderer<?,?> lrend) {
       EntityModel model = lrend.getModel();
+      model.child = entity.isBaby();
       model.animateModel(entity, 0, 0, 0);
       model.setAngles(entity, 0, 0, 0, 0, 0);
       RenderLayer renderLayer = model.getLayer(rend.getTexture(entity));
